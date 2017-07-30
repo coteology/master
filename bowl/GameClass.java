@@ -1,7 +1,11 @@
 public class GameClass{
 	FlameClass[] one_game;
 
-	//メイン関数
+	/**
+	* ボーリングを実行する
+	* @param 
+	* @param 
+	*/
 	public void executeBowling(){
 		//フレーム準備
 		createFlames__();
@@ -10,7 +14,11 @@ public class GameClass{
 		//ゲームスタート
 		startBowlingGame__();
 	}
-
+	/**
+	* ボーリングを開始
+	* @param 
+	* @param 
+	*/
 	private void startBowlingGame__(){
 		for(int i = 0; i < one_game.length; i++){
 			//1フレームスタート
@@ -31,6 +39,11 @@ public class GameClass{
 			outputResult__T(one_game);
 		}
 	}
+	/**
+	* フレームを作成
+	* @param 
+	* @param 
+	*/
 	private void createFlames__(){
 		// 初期化
 		one_game = new FlameClass[10];
@@ -39,6 +52,11 @@ public class GameClass{
 			one_game[i] = new FlameClass();
 		}
 	}
+	/**
+	* フレームを初期化
+	* @param 
+	* @param 
+	*/
 	private void initCreatedFlames__(){
 		for(int i = 0; i < one_game.length; i++){
 			//ステータス、点数を初期化
@@ -47,6 +65,11 @@ public class GameClass{
 			one_game[i].setFlameNumber(i);
 		}
 	}
+	/**
+	* n投目のボールを投げていいか判定
+	* @param in_now_flame 現フレーム
+	* @param 
+	*/
 	private int isThrowPattern__(FlameClass in_now_flame){
 		//1投目
 		if(in_now_flame.getPoint(1) == in_now_flame.DEFAULT){
@@ -60,22 +83,28 @@ public class GameClass{
 		}
 		//2投目
 		if((in_now_flame.getPoint(2) == in_now_flame.DEFAULT) && (in_now_flame.getFlameNumber() == 10) && (in_now_flame.getPoint(1) == 10)){
-			//10フレーム目で1投目がストライクなら、2投目を投げる
+			//10フレーム目で1投目がストライクなら、
+			//ピンをセット
+			//2投目を投げる
 			in_now_flame.setPin(10);
 			return 2;
 		}
 		//3投目
 		if( (in_now_flame.getPoint(3) == in_now_flame.DEFAULT) && (in_now_flame.getFlameNumber() == 10) && (in_now_flame.getPoint(1) == 10 || in_now_flame.getZanPinCount() == 0)){
 			//10フレーム目で1投目がストライクもしくは、スペアなら、3投目を投げる
+			in_now_flame.setPin(10);
 			return 3;
 		}
 		return -1;
 	}
-
-	//計算
+	/**
+	* 計算処理
+	* @param in_all_flame[] 全フレーム 
+	* @param 
+	*/
 	private void allFlameCalc__(FlameClass in_all_flame[]){
 		for(int i = 0; i < in_all_flame.length; i++){
-			//開始されているフレーム かつ 未計算
+			//ステータスが開始されていて、合計点が未計算の場合
 			if((in_all_flame[i].getStatus() != in_all_flame[i].NOT_STARTED) && (in_all_flame[i].getEndPoint() == in_all_flame[i].DEFAULT)){
 				//1フレーム目
 				if(in_all_flame[i].getFlameNumber() == 1){
@@ -102,7 +131,7 @@ public class GameClass{
 					}
 				}
 				//2投目-9投目
-				if(in_all_flame[i].getFlameNumber() > 1 && in_all_flame[i].getFlameNumber() < 10){
+				if(in_all_flame[i].getFlameNumber() > 1 && in_all_flame[i].getFlameNumber() <= 9){
 					//前フレームの合計点数が設定済み
 					if(in_all_flame[i-1].getEndPoint() != in_all_flame[i].DEFAULT){
 						//ストライクの場合
@@ -128,17 +157,40 @@ public class GameClass{
 						}
 					}
 				}
-				//10投目
+				//10フレーム目
+				if(in_all_flame[i].getFlameNumber() == 10){
 					//前フレームの合計点数が設定済み
+					if(in_all_flame[i-1].getEndPoint() != in_all_flame[i].DEFAULT){
 						//ストライクの場合
-						//	前フレームの合計点 + 10 + Next1投目+Next2投目
+						if(in_all_flame[i].isStrike()){
+							if((in_all_flame[i].getPoint(1) != in_all_flame[i].DEFAULT) && (in_all_flame[i].getPoint(2) != in_all_flame[i].DEFAULT) && (in_all_flame[i].getPoint(3) != in_all_flame[i].DEFAULT)){
+								//前フレームの合計点 + 1投目 + 2投目 + 3投目
+								in_all_flame[i].setEndPoint(in_all_flame[i-1].getEndPoint() + in_all_flame[i].getPoint(1) + in_all_flame[i].getPoint(2) + in_all_flame[i].getPoint(3));
+							}
+						}
 						//スペアの場合
-						//	前フレームの合計点 + 10 + Next1投目
+						else if(in_all_flame[i].isSpare()){
+							if((in_all_flame[i].getPoint(1) != in_all_flame[i].DEFAULT) && (in_all_flame[i].getPoint(2) != in_all_flame[i].DEFAULT) && (in_all_flame[i].getPoint(3) != in_all_flame[i].DEFAULT)){
+								//前フレームの合計点 + 1投目 + 2投目 + 3投目
+								in_all_flame[i].setEndPoint(in_all_flame[i-1].getEndPoint() + in_all_flame[i].getPoint(1) + in_all_flame[i].getPoint(2) + in_all_flame[i].getPoint(3));
+							}
+						}
 						//その他
-						//	前フレームの合計点 + 1投目と2投目の合計点数
+						else{
+							//前フレームの合計点 + 1投目と2投目の合計点数
+							in_all_flame[i].setEndPoint(in_all_flame[i-1].getEndPoint() + in_all_flame[i].getPoint(1) + in_all_flame[i].getPoint(2));
+						}
+					}
+				}
 			}
 		}
 	}
+	/**
+	* 次フレーム以降のn投目の点数を取得
+	* @param in_base_flame_number 現在のフレーム
+	* @param in_all_flame[] 参照するフレーム
+	* @param in_wanted_throw_cnt 点数を取得したいn投目
+	*/
 	//次フレーム以降のn投目の点数を取得
 	private int nextPoint__(int in_base_flame_number,FlameClass in_all_flame[],int in_wanted_throw_cnt){
 		int exsists_cnt =0;
@@ -169,21 +221,22 @@ public class GameClass{
 		}
 		return result;
 	}
-	
-	private void outputResult__(int in_end_point){
-		if (in_end_point < 0){
-			System.out.println("合計点数：点数未確定");
-		}else{
-			System.out.println("合計点数：" + in_end_point);
-		}
-		
-	}
+	/**
+	* 合計点表示
+	* @param in_all_flame[] 参照するフレーム
+	* @param 
+	*/
 	private void outputResult__T(FlameClass in_all_flame[]){
+		int max_point = 0;
 		for(int i = 0; i < in_all_flame.length; i++){
 			if(in_all_flame[i].getEndPoint() != in_all_flame[i].DEFAULT){
-				System.out.println(in_all_flame[i].getFlameNumber() +"フレーム目の合計点数："+in_all_flame[i].getEndPoint());
+				//合計点の最大を取得
+				if (in_all_flame[i].getEndPoint() > max_point){
+					max_point = in_all_flame[i].getEndPoint();
+				}
 			}
 		}
+		System.out.println("合計点数："+max_point);
 	}
 
 
