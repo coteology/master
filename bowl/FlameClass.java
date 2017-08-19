@@ -5,13 +5,13 @@ public class FlameClass{
 
 	// 1フレームごとのステータス
 	private int status;                    //ステータス
-	final int NOT_STARTED = -1;            //未開始
-	final int STARTED = 0;                 //開始済み
+	static final int NOT_STARTED = -1;     //未開始
+	static final int STARTED = 0;          //開始済み
 	//投数
-	final int FIRST = 1;                   //1投目
-	final int SECOND = 2;                  //2投目
-	final int THIRD = 3;                   //3投目
-	final int DEFAULT = -1;                //n投目の初期値
+	static final int FIRST = 1;            //1投目
+	static final int SECOND = 2;           //2投目
+	static final int THIRD = 3;            //3投目
+	static final int DEFAULT = -1;         //n投目の初期値
 
 	private int end_point;                 //1フレームごとの合計点
 	private int pin_count;                 //1フレームごとのピン数

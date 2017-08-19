@@ -25,7 +25,7 @@ public class GameClass{
 			one_game[i].setStatus(one_game[i].STARTED);
 			//ピンをセット
 			one_game[i].setPin(10);
-			//
+			//nフレーム目か表示
 			System.out.println("■"+one_game[i].getFlameNumber()+"フレーム目");
 			//ボールを投げる
 			while(isThrowPattern__(one_game[i]) > 0){
@@ -71,31 +71,29 @@ public class GameClass{
 	* @param 
 	*/
 	private int isThrowPattern__(FlameClass in_now_flame){
+		int result = -1;
 		//1投目
 		if(in_now_flame.getPoint(1) == in_now_flame.DEFAULT){
 			//まだ投げていないなら、1投目を投げる
-			return 1;
-		}
-		//2投目
-		if((in_now_flame.getPoint(2) == in_now_flame.DEFAULT) && (in_now_flame.getZanPinCount() > 0)){
+			result = in_now_flame.FIRST;
+		}//2投目
+		else if((in_now_flame.getPoint(2) == in_now_flame.DEFAULT) && (in_now_flame.getZanPinCount() > 0)){
 			//ピンが残っているなら、2投目を投げる
-			return 2;
-		}
-		//2投目
-		if((in_now_flame.getPoint(2) == in_now_flame.DEFAULT) && (in_now_flame.getFlameNumber() == 10) && (in_now_flame.getPoint(1) == 10)){
+			result = in_now_flame.SECOND;
+		}//2投目
+		else if((in_now_flame.getPoint(2) == in_now_flame.DEFAULT) && (in_now_flame.getFlameNumber() == 10) && (in_now_flame.isStrike())){
 			//10フレーム目で1投目がストライクなら、
 			//ピンをセット
 			//2投目を投げる
 			in_now_flame.setPin(10);
-			return 2;
-		}
-		//3投目
-		if( (in_now_flame.getPoint(3) == in_now_flame.DEFAULT) && (in_now_flame.getFlameNumber() == 10) && (in_now_flame.getPoint(1) == 10 || in_now_flame.getZanPinCount() == 0)){
+			result = in_now_flame.SECOND;
+		}//3投目
+		else if( (in_now_flame.getPoint(3) == in_now_flame.DEFAULT) && (in_now_flame.getFlameNumber() == 10) && (in_now_flame.isStrike() || in_now_flame.isSpare())){
 			//10フレーム目で1投目がストライクもしくは、スペアなら、3投目を投げる
 			in_now_flame.setPin(10);
-			return 3;
+			result = in_now_flame.THIRD;
 		}
-		return -1;
+		return result;
 	}
 	/**
 	* 計算処理
@@ -231,9 +229,7 @@ public class GameClass{
 		for(int i = 0; i < in_all_flame.length; i++){
 			if(in_all_flame[i].getEndPoint() != in_all_flame[i].DEFAULT){
 				//合計点の最大を取得
-				if (in_all_flame[i].getEndPoint() > max_point){
-					max_point = in_all_flame[i].getEndPoint();
-				}
+				max_point = Math.max(max_point,in_all_flame[i].getEndPoint());
 			}
 		}
 		System.out.println("合計点数："+max_point);
